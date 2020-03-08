@@ -1,0 +1,149 @@
+a.no-underline {
+    text-decoration: none;
+}
+
+a.post-title {
+    color: black;
+}
+
+a.post-title:hover {
+    color: dodgerblue;
+}
+
+textarea {
+    border-color: #1f7199;
+    font-size: x-large;
+    margin-right: 0.2rem;
+}
+
+.form-control-dark {
+    color: #fff;
+    background-color: rgba(255, 255, 255, .1);
+    border-color: rgba(255, 255, 255, .1);
+}
+
+.form-control-dark:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
+
+.word-break {
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.text-underline {
+    text-decoration: underline;
+}
+
+/*
+ * Sidebar
+ */
+.feather {
+    width: 16px;
+    height: 16px;
+    vertical-align: text-bottom;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100; /* Behind the navbar */
+    padding: 48px 0 0; /* Height of navbar */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+    .sidebar-sticky {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+}
+
+.sidebar .nav-link .feather {
+    margin-right: 4px;
+    color: #727272;
+}
+
+.sidebar .nav-link.active {
+    color: #007bff;
+}
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+    color: inherit;
+}
+
+/*
+ * file-input
+ */
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+/*
+$("code").each(function(){
+    $(this).html("<ol><li>" + $(this).html().replace(/\n/g,"\n</li><li>") +"\n</li></ol>");
+});
+document.querySelectorAll("code").forEach(code => {
+    code.innerHTML = "<ol><li>" + code.innerHTML.replace(/\n/g, "\n</li><li>") + "\n</li></ol>";
+})
+ */
+/*.hljs {*/
+/*    border: 0;*/
+/*    font-size: 12px;*/
+/*    display: block;*/
+/*    padding: 1px;*/
+/*    margin: 0;*/
+/*    width: 100%;*/
+/*    font-weight: 200;*/
+/*    color: #333;*/
+/*    white-space: pre-wrap*/
+/*}*/
+
+.hljs ol {
+    list-style: decimal;
+    margin: 0 0 0 40px !important;
+    padding: 0;
+}
+
+.hljs ol li {
+    list-style: decimal-leading-zero;
+    border-left: 1px solid #ddd !important;
+    padding: 5px !important;
+    margin: 0 !important;
+    white-space: pre;
+}
