@@ -16,9 +16,10 @@ import {dateFormat} from "../../util/time";
 export default class PostModify extends React.Component {
     constructor(props) {
         super(props);
-        const name = this.props.match.params.name;
+        const id = this.props.match.params.id;
         this.state = {
-            name: name,
+            id,
+            name: "",
             style: "",
             title: "",
             published: true,
@@ -37,7 +38,7 @@ export default class PostModify extends React.Component {
     }
 
     componentDidMount() {
-        getPost({name: this.state.name}).then(res => {
+        getPost(this.state.id).then(res => {
             if (res.data.success) {
                 let {
                     title, name, published, summary, content,
@@ -49,7 +50,7 @@ export default class PostModify extends React.Component {
                     published,
                     summary,
                     content,
-                    currentTags: tags,
+                    currentTags: tags.map(it => it.name),
                     style: getStyle(style),
                     ctime: dateFormat(ctime, "yyyy-MM-dd"),
                     mtime: dateFormat(mtime, "yyyy-MM-dd"),
@@ -71,9 +72,9 @@ export default class PostModify extends React.Component {
         let {id, title, style, name, published, summary, currentTags, content} = this.state;
         if (!checkPostFormOrSetState(this)) return;
 
-        updatePost({id, title, style, name, published, summary, tags: currentTags, content}).then(res => {
+        updatePost(id, {title, style, name, published, summary, tags: currentTags, content}).then(res => {
             if (res.data.success) {
-                pushForcibly(`/post/${name}`);
+                pushForcibly(`/post/${id}`);
             } else {
                 this.setState({error: res.data.message});
             }

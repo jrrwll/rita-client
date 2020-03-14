@@ -16,8 +16,14 @@ export default class NameEditPanel extends React.Component {
         this.state = {
             nameError: "",
             nameCheck: "",
-            originalName: props.name,
+            originalName: "",
         };
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (!prevProps.name && this.props.name) {
+            this.setState({originalName: this.props.name})
+        }
     }
 
     showValidity(nameInput, isValid, nameError, nameCheck) {

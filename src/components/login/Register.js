@@ -1,7 +1,7 @@
 import React from "react";
 import $ from "jquery";
 import RegisterPanel from "./RegisterPanel";
-import {storage} from '../../config';
+import {getOrigin, storage} from '../../config';
 import {pushForcibly} from '../../util/history';
 import {obtainImageCode, submitRegister} from "../../actions";
 
@@ -29,7 +29,7 @@ export default class Register extends React.Component {
     handleObtainImageCode(child) {
         if (this.check(child) === undefined) return;
 
-        obtainImageCode($("#register-page-email").val(), 300, 100).then(res => {
+        obtainImageCode({email: $("#register-page-email").val(), width: 300, height: 100}).then(res => {
             if (res.data.success) {
                 child.setState({
                     hiddenImage: false,
@@ -57,8 +57,11 @@ export default class Register extends React.Component {
         }
 
         const username = usernameInput.val();
-        submitRegister(username, passwordInput.val(),
-            emailInput.val(), imageCodeInput.val()).then(res => {
+        submitRegister({
+            username, password: passwordInput.val(),
+            email: emailInput.val(), imageCode: imageCodeInput.val(),
+            redirect: `${getOrigin()}/register/confirm`
+        }).then(res => {
             if (res.data.success) {
                 // clear old main cache
                 storage.removeUser();

@@ -14,7 +14,8 @@ function remove(key) {
 const HIGHLIGHT_STYLE = "HIGHLIGHT_STYLE";
 const AUTHORIZATION_TOKEN = "AUTHORIZATION_TOKEN";
 const AUTHORIZATION_USER = "AUTHORIZATION_USER";
-const AUTHORIZATION_AVATAR = "AUTHORIZATION_AVATAR";
+const USER_AVATAR = "USER_AVATAR";
+const USER_TAGS = "USER_TAGS";
 const POST_NEW_DRAFT = "POST_NEW_DRAFT";
 
 const storage = {
@@ -43,13 +44,22 @@ const storage = {
         return remove(AUTHORIZATION_USER);
     },
     getAvatar() {
-        return localStorage.getItem(AUTHORIZATION_AVATAR)
+        return localStorage.getItem(USER_AVATAR)
     },
     setAvatar(avatar) {
-        localStorage.setItem(AUTHORIZATION_AVATAR, avatar)
+        localStorage.setItem(USER_AVATAR, avatar)
     },
     removeAvatar() {
-        localStorage.removeItem(AUTHORIZATION_AVATAR)
+        localStorage.removeItem(USER_AVATAR)
+    },
+    getTags() {
+        return get(USER_TAGS);
+    },
+    setTags(user) {
+        return set(USER_TAGS, user);
+    },
+    removeTags() {
+        return remove(USER_TAGS);
     },
 
     // code highlight style
@@ -79,6 +89,15 @@ const storage = {
     removePostNewDraft() {
         remove(POST_NEW_DRAFT);
     },
+
+    removeAll() {
+        storage.removeUser();
+        storage.removeAvatar();
+        storage.removeTags();
+        storage.removePostNewDraft();
+        storage.removeToken();
+        storage.removeStyle();
+    }
 
 };
 

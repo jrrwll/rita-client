@@ -1,10 +1,11 @@
 import React from "react";
-import {requireFetchAvatar, requireFetchUser} from "../../actions";
+import {requireFetchAvatar, requireFetchTags, requireFetchUser} from "../../actions";
 
 export default class UserProvider extends React.Component {
     componentDidMount() {
         requireFetchUser();
         requireFetchAvatar();
+        requireFetchTags();
     }
 
     render() {

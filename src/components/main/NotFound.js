@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from "jquery";
 
-export default class NotFoundPage extends React.Component {
+export default class NotFound extends React.Component {
     componentDidMount() {
         $("body").css("background-color", "#384a5d");
     }

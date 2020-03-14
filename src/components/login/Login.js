@@ -32,7 +32,7 @@ export default class Login extends React.Component {
         }
 
         const username = usernameInput.val().trim();
-        submitLogin(username, passwordInput.val()).then(res => {
+        submitLogin({username, password: passwordInput.val()}).then(res => {
             if (res.data.success) {
                 // if success to login, go to the main page
                 pushForcibly(`/overview`);

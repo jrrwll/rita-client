@@ -1,38 +1,25 @@
 import React from "react";
-import {deleteTag, getTagList, isFavoriteTag, updateTag} from "../../actions";
+import {deleteTag, FETCH_TAGS_EVENT, updateTag} from "../../actions";
 import HeaderLayout from "../common/HeaderLayout";
 import SidebarLayout, {SIDEBAR_ITEMS} from "../common/SidebarLayout";
-import {yyyyMMdd} from "../../util/time";
-import PaginationPanel from "../common/PaginationPanel";
-import {getSearchValue} from "../../util/url";
-import {showError, showSuccessAndRefresh, showUnexpectedError, storage} from "../../config";
+import {emitter, showError, showUnexpectedError, storage} from "../../config";
 import UserProvider from "../provider/UserProvider";
 import {refresh} from "../../util/history";
 
 export default class TagList extends React.Component {
     constructor(props) {
         super(props);
-        // handle ?page=xxx
-        const page = getSearchValue('page', 1);
         this.state = {
             tagList: [],
             total: 0,
-            size: 20,
-            page,
         };
+        this.fetchTagsEventEmitter = emitter.addListener(FETCH_TAGS_EVENT, (tags) => {
+            this.setState({tagList: tags, total: tags.length});
+        });
     }
 
-    componentDidMount() {
-        const {page, size} = this.state;
-        getTagList({page, size}).then(res => {
-            if (res.data.success) {
-                const data = res.data.data;
-                this.setState({
-                    tagList: data.items,
-                    total: data.total,
-                })
-            }
-        });
+    componentWillUnmount() {
+        emitter.removeListener(FETCH_TAGS_EVENT, this.fetchTagsEventEmitter);
     }
 
     deleteButtonOnClick(e) {
@@ -41,7 +28,7 @@ export default class TagList extends React.Component {
         });
     }
 
-    deleteOnClick(e) {
+    deleteOnClick() {
         const {deleteTagId} = this.state;
         if (!deleteTagId) {
             showUnexpectedError();
@@ -50,17 +37,19 @@ export default class TagList extends React.Component {
 
         deleteTag(deleteTagId).then(res => {
             if (res.data.success) {
-                showSuccessAndRefresh("Deleted! You can get it back from trash ");
+                refresh();
             } else {
                 showError("Failed to delete this tag " + deleteTagId);
             }
         })
     }
 
-    changeFavorite(e, id, favorite) {
-        updateTag({id, favorite: !favorite}).then(res => {
+    changeFavorite(e, tag) {
+        let {id, name, favorite} = tag;
+        favorite = !favorite;
+        updateTag(id, {name, favorite}).then(res => {
             if (res.data.success) {
-                storage.removeUser();
+                storage.removeTags();
                 refresh();
             } else {
                 showError(res.data.message);
@@ -87,29 +76,24 @@ export default class TagList extends React.Component {
                                 <li className="list-group-item">
                                     <div className=" row">
                                         {tagList.map((item, index) => {
-                                            const favorite = isFavoriteTag(item.name);
                                             return (
-                                                <div className="col-lg-6 col-sm-12 my-2 row" key={index}>
-                                                    <div className="mr-3">
-                                                        <span data-feather="plus"/>{yyyyMMdd(item.ctime)}&ensp;/&ensp;
-                                                        <span data-feather="check"/>{yyyyMMdd(item.mtime)}
-                                                    </div>
+                                                <div className="col-lg-3 col-md-4 col-sm-12 my-2 row" key={index}>
                                                     <a className="post-title no-underline word-break mx-auto"
-                                                       href={`/tag/${item.name}`}>{item.name}</a>
+                                                       href={`/tag/${item.id}`}>{item.name}&nbsp;({item.count})</a>
                                                     <div className="mr-4">
-                                                        {favorite ?
+                                                        {item.favorite ?
                                                             <i className="fa fa-star fa-lg mr-1" onMouseEnter={e => {
                                                                 e.target.className = "fa fa-star-o fa-lg mr-1"
                                                             }} onMouseLeave={e => {
                                                                 e.target.className = "fa fa-star fa-lg mr-1"
                                                             }}
-                                                               onClick={e => this.changeFavorite(e, item.id, favorite)}/> :
+                                                               onClick={e => this.changeFavorite(e, item)}/> :
                                                             <i className="fa fa-star-o fa-lg mr-1" onMouseEnter={e => {
                                                                 e.target.className = "fa fa-star fa-lg mr-1"
                                                             }} onMouseLeave={e => {
                                                                 e.target.className = "fa fa-star-o fa-lg mr-1"
                                                             }}
-                                                               onClick={e => this.changeFavorite(e, item.id, favorite)}/>
+                                                               onClick={e => this.changeFavorite(e, item)}/>
                                                         }
                                                         <button className="btn btn-outline-danger btn-sm ml-2"
                                                                 data-toggle="modal"
@@ -130,18 +114,19 @@ export default class TagList extends React.Component {
 
                                 </li>
                             </ul>
-                            <PaginationPanel
-                                pattern="/tags?page=%d"
-                                size={this.state.size}
-                                page={this.state.page}
-                                total={this.state.total}/>
                         </div>
                     </div>
                 </div>
 
                 {/* modal */}
                 <div className="modal fade" id="tag-list-delete-tag-confirm-modal" tabIndex="-1" role="dialog"
-                     aria-hidden="true">
+                     aria-hidden="true" onKeyUp={e => {
+                    if (e.key === 'Enter') {
+                        this.deleteOnClick();
+                    } else {
+                        document.querySelector("#tag-list-delete-tag-confirm-modal-close-button").click();
+                    }
+                }}>
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -154,10 +139,11 @@ export default class TagList extends React.Component {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary"
+                                        id="tag-list-delete-tag-confirm-modal-close-button"
                                         data-dismiss="modal">Close
                                 </button>
                                 <button type="button" className="btn btn-danger" data-dismiss="modal"
-                                        onClick={e => this.deleteOnClick(e)}>Confirm
+                                        onClick={e => this.deleteOnClick()}>Confirm
                                 </button>
                             </div>
                         </div>

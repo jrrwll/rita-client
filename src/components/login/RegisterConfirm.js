@@ -1,64 +1,53 @@
 import React from "react";
 import $ from 'jquery';
-import {validatePassword} from "../../config/validation";
-import {submitPasswordResetConfirm} from "../../actions";
+import {validateUsername} from "../../config/validation";
+import {submitRegisterConfirm} from "../../actions";
 import {pushForcibly} from "../../util/history";
 import {getSearchValue} from "../../util/url";
+import NotFound from "../main/NotFound";
+import {storage} from "../../config";
 
-export default class PasswordResetConfirmPage extends React.Component {
+export default class RegisterConfirm extends React.Component {
     constructor(props) {
         super(props);
         const accessToken = getSearchValue("accessToken", "");
-        const timestamp = getSearchValue("timestamp", "")
-
-        if (!accessToken || !timestamp) {
-            pushForcibly("/404");
-        }
         this.state = {
+            usernameError: "",
             passwordError: "",
             error: "",
-            accessToken, timestamp
+            accessToken,
         };
-
-
     }
-
 
     componentDidMount() {
-        $("#password-reset-confirm-page-password").focus();
+        $("#register-confirm-page-username").focus();
     }
 
-    checkPassword() {
-        const input = $("#password-reset-confirm-page-password");
-        const passwordError = validatePassword(input.val());
-        if (passwordError) {
+    checkUsername() {
+        const input = $("#register-confirm-page-username");
+        const usernameError = validateUsername(input.val());
+        if (usernameError) {
             input.attr("class", "form-control form-control-lg is-invalid");
         } else {
             input.attr("class", "form-control form-control-lg is-valid");
         }
-        this.setState({passwordError: passwordError});
-        return !passwordError
-    }
-
-    passwordOnKeyUp(e) {
-        if (!this.checkPassword()) return;
-        if (e.key === "Enter") {
-            $("#password-reset-confirm-page-submit").click();
-        }
+        this.setState({usernameError});
+        return !usernameError
     }
 
     formOnSubmit() {
-        const passwordInput = $("#password-reset-confirm-page-password");
-        if (!this.checkPassword()) {
-            passwordInput.focus();
+        const usernameInput = $("#register-confirm-page-username");
+        if (!this.checkUsername()) {
+            usernameInput.focus();
             return;
         }
 
-        const {accessToken, timestamp} = this.state;
-        submitPasswordResetConfirm(passwordInput.val(), accessToken, timestamp).then(res => {
+        const {accessToken} = this.state;
+        const username = usernameInput.val().trim();
+        submitRegisterConfirm({username, accessToken}).then(res => {
             if (res.data.success) {
-                // if success to reset password, go to the login page
-                pushForcibly(`/login`);
+                storage.removeAll();
+                pushForcibly(`/login?username=${username}`);
             } else {
                 // or show error message in login page
                 this.setState({
@@ -69,6 +58,10 @@ export default class PasswordResetConfirmPage extends React.Component {
     }
 
     render() {
+        if (!this.state.accessToken) {
+            return <NotFound/>
+        }
+
         return (
             <div style={{
                 background: "#f6f6f6",
@@ -92,7 +85,7 @@ export default class PasswordResetConfirmPage extends React.Component {
                             <div className="row" style={{marginTop: 25}}>
                                 <div className="col-4 offset-4">
                                     <h3 style={{textAlign: "center"}}>
-                                        <strong>Reset your password</strong>
+                                        <strong>Active account</strong>
                                     </h3>
                                 </div>
                             </div>
@@ -115,13 +108,12 @@ export default class PasswordResetConfirmPage extends React.Component {
                                         )}
                                     </div>
                                     <div className="col-4 offset-4">
-                                        <label>Password</label>
+                                        <label>Username</label>
                                         <input type="text" className="form-control form-control-lg"
-                                               id="password-reset-confirm-page-password" required placeholder="Password"
-                                               onBlur={e => this.checkPassword()}
-                                               onKeyUp={e => this.passwordOnKeyUp(e)}/>
+                                               id="register-confirm-page-username" required placeholder="Username"
+                                               onChange={e => this.checkUsername()}/>
                                         <div className="invalid-feedback">
-                                            {this.state.passwordError}
+                                            {this.state.usernameError}
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +124,7 @@ export default class PasswordResetConfirmPage extends React.Component {
                                                 id="password-reset-confirm-page-submit"
                                                 style={{marginBottom: 10,}}
                                                 onClick={e => this.formOnSubmit(e)}
-                                        >Reset
+                                        >Confirm
                                         </button>
                                     </div>
                                 </div>

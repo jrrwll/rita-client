@@ -2,7 +2,7 @@ import React from 'react';
 import {showError, showSuccess} from "../../config";
 import SidebarLayout, {SIDEBAR_ITEMS} from "../common/SidebarLayout";
 import HeaderLayout from "../common/HeaderLayout";
-import {getTag, isFavoriteTag, removePostFromTag} from "../../actions";
+import {getTag, removePostFromTag} from "../../actions";
 import {refresh} from "../../util/history";
 import feather from "feather-icons";
 import PaginationPanel from "../common/PaginationPanel";
@@ -14,10 +14,13 @@ import TagViewCorePanel from "./TagViewCorePanel";
 export default class TagView extends React.Component {
     constructor(props) {
         super(props);
-        const name = this.props.match.params.name;
+        const id = this.props.match.params.id;
         const page = getSearchValue('page', 1);
         this.state = {
-            name: name,
+            id,
+            name: "",
+            favorite: false,
+            count: 0,
             posts: [],
             ctime: 0,
             mtime: 0,
@@ -31,13 +34,13 @@ export default class TagView extends React.Component {
     }
 
     componentDidMount() {
-        const {name, page, size} = this.state;
-        getTag({name, page, size}).then(res => {
+        const {id, page, size} = this.state;
+        getTag(id, page, size).then(res => {
             if (res.data.success) {
-                const {id, ctime, mtime, count, posts} = res.data.data;
+                const {name, favorite, ctime, mtime, count, posts} = res.data.data;
                 this.setState({
-                    id, ctime, mtime, count,
-                    posts: posts.items, total: posts.total, favorite: isFavoriteTag(name)
+                    name, favorite, ctime, mtime, count,
+                    posts: posts.items, total: posts.total
                 });
             }
         });
@@ -105,7 +108,7 @@ export default class TagView extends React.Component {
                                     {posts.map((item, index) => (
                                         <div className="row my-2" key={index}>
                                             <a className="post-title no-underline word-break"
-                                               href={`/post/${item.name}`}>{item.title}</a>
+                                               href={`/post/${item.id}`}>{item.title}</a>
                                             <div className="ml-auto mr-0">
                                                 {item.favorite ?
                                                     <i className="fa fa-star mr-1"/> :

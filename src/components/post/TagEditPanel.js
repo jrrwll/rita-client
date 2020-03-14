@@ -34,7 +34,7 @@ export default class TagEditPanel extends React.Component {
             return false;
         }
 
-        if (/[a-z0-9.-_@#$%&*^<>?;:|/\\!]{2,32}/i.test(tag)) {
+        if (/^[a-z0-9.-_@#$%&*^<>?;:|/\\!]{2,32}$/i.test(tag)) {
             if (this.props.currentTags.indexOf(tag) !== -1) {
                 this.showValidity(input, false, "The tag already exists", "");
                 return false;
@@ -59,8 +59,7 @@ export default class TagEditPanel extends React.Component {
         this.props.setCurrentTags(currentTags);
     }
 
-    tagCloseOnClick(e) {
-        let tag = e.target.parentNode.querySelector(".btn").innerText;
+    tagCloseOnClick(tag) {
         const {currentTags} = this.props;
         const index = currentTags.indexOf(tag);
         if (index !== -1) {
@@ -129,15 +128,11 @@ export default class TagEditPanel extends React.Component {
                     <div className="container-fluid">
                         <div className="row">
                             {currentTags.map((item, i) => (
-                                <div className="btn btn-light mr-2" key={i}
-                                     onClick={e => this.tagCloseOnClick(e)}>
-                                    <a className="btn" style={{
-                                        color: "#258",
-                                    }} href={`/tag/${item}`}>
-                                        {item}
-                                    </a>
-                                    <span className="btn">&times;</span>
-                                </div>
+                                <button className="btn btn-outline-info mr-3" key={i}
+                                        style={{color: "#258",}}
+                                        onClick={e => this.tagCloseOnClick(item)}>
+                                    {item}&nbsp;&times;
+                                </button>
                             ))}
                         </div>
                     </div>
@@ -149,7 +144,7 @@ export default class TagEditPanel extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title">
-                                    Add tag by you tags list
+                                    Add tag
                                 </h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>

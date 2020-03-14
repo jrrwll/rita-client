@@ -2,10 +2,9 @@ import React from "react";
 import {deletePost, getPostList, updatePost} from "../../actions";
 import HeaderLayout from "../common/HeaderLayout";
 import SidebarLayout, {SIDEBAR_ITEMS} from "../common/SidebarLayout";
-import {yyyyMMdd} from "../../util/time";
 import PaginationPanel from "../common/PaginationPanel";
 import {getSearchValue} from "../../util/url";
-import {showError, showSuccessAndRefresh, showUnexpectedError} from "../../config";
+import {showError, showUnexpectedError} from "../../config";
 import UserProvider from "../provider/UserProvider";
 import {refresh} from "../../util/history";
 
@@ -24,7 +23,7 @@ export default class PostList extends React.Component {
 
     componentDidMount() {
         const {page, size} = this.state;
-        getPostList({page, size}).then(res => {
+        getPostList(page, size).then(res => {
             if (res.data.success) {
                 const data = res.data.data;
                 this.setState({
@@ -50,13 +49,15 @@ export default class PostList extends React.Component {
 
         deletePost(deletePostId).then(res => {
             if (res.data.success) {
-                showSuccessAndRefresh("Deleted! You can get it back from trash ");
+                refresh();
             }
         })
     }
 
-    changeFavorite(e, id, favorite) {
-        updatePost({id, favorite: !favorite}).then(res => {
+    changeFavorite(e, post) {
+        let {id, title, style, name, published, favorite, summary, content} = post;
+        favorite = !favorite;
+        updatePost(id, {title, style, name, published, favorite, summary, content}).then(res => {
             if (res.data.success) {
                 refresh();
             } else {
@@ -68,8 +69,10 @@ export default class PostList extends React.Component {
         })
     }
 
-    changePublished(e, id, published) {
-        updatePost({id, published: !published}).then(res => {
+    changePublished(e, post) {
+        let {id, title, style, name, published, favorite, summary, content} = post;
+        published = !published;
+        updatePost(id, {title, style, name, published, favorite, summary, content}).then(res => {
             if (res.data.success) {
                 refresh();
             } else {
@@ -97,24 +100,24 @@ export default class PostList extends React.Component {
                                 <li className="list-group-item">
                                     {postList.map((item, index) => (
                                         <div className="row my-2" key={index}>
-                                            <div className="mr-3">
-                                                <span data-feather="plus"/>{yyyyMMdd(item.ctime)}&ensp;/&ensp;
-                                                <span data-feather="check"/>{yyyyMMdd(item.mtime)}
-                                            </div>
                                             <a className="post-title no-underline word-break"
-                                               href={`/post/${item.name}`}>{item.title}</a>
-                                            <div className="ml-auto mr-0">
+                                               href={`/post/${item.id}`}>{item.title}</a>
+                                            {/*<div className="mr-3 ml-auto">*/}
+                                            {/*    Created on {yyyyMMdd(item.ctime)}&ensp;/&ensp;*/}
+                                            {/*    Modified on {yyyyMMdd(item.mtime)}*/}
+                                            {/*</div>*/}
+                                            <div className="ml-auto">
                                                 {item.favorite ?
                                                     <i className="fa fa-star fa-lg mr-1" onMouseEnter={e => {
                                                         e.target.className = "fa fa-star-o fa-lg mr-1"
                                                     }} onMouseLeave={e => {
                                                         e.target.className = "fa fa-star fa-lg mr-1"
-                                                    }} onClick={e => this.changeFavorite(e, item.id, item.favorite)}/> :
+                                                    }} onClick={e => this.changeFavorite(e, item)}/> :
                                                     <i className="fa fa-star-o fa-lg mr-1" onMouseEnter={e => {
                                                         e.target.className = "fa fa-star fa-lg mr-1"
                                                     }} onMouseLeave={e => {
                                                         e.target.className = "fa fa-star-o fa-lg mr-1"
-                                                    }} onClick={e => this.changeFavorite(e, item.id, item.favorite)}/>
+                                                    }} onClick={e => this.changeFavorite(e, item)}/>
                                                 }
                                                 {item.published ?
                                                     <i className="fa fa-eye fa-lg" onMouseEnter={e => {
@@ -122,17 +125,17 @@ export default class PostList extends React.Component {
                                                     }} onMouseLeave={e => {
                                                         e.target.className = "fa fa-eye fa-lg"
                                                     }}
-                                                       onClick={e => this.changePublished(e, item.id, item.published)}/> :
+                                                       onClick={e => this.changePublished(e, item)}/> :
                                                     <i className="fa fa-eye-slash fa-lg" onMouseEnter={e => {
                                                         e.target.className = "fa fa-eye fa-lg"
                                                     }} onMouseLeave={e => {
                                                         e.target.className = "fa fa-eye-slash fa-lg"
                                                     }}
-                                                       onClick={e => this.changePublished(e, item.id, item.published)}/>
+                                                       onClick={e => this.changePublished(e, item)}/>
                                                 }
                                                 <a className="btn btn-outline-info btn-sm ml-2"
-                                                   href={`/post/${item.name}`}>
-                                                    modify<span style={{display: "none",}}>{item.id}</span>
+                                                   href={`/post/${item.id}/modify`}>
+                                                    modify
                                                 </a>
                                                 <button className="btn btn-outline-danger btn-sm ml-1"
                                                         data-toggle="modal"

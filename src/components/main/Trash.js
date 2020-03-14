@@ -1,5 +1,5 @@
 import React from "react";
-import {getPostDeletedList, restorePost} from "../../actions";
+import {deleteRestorePost, getPostDeletedList, restorePost} from "../../actions";
 import HeaderLayout from "../common/HeaderLayout";
 import SidebarLayout, {SIDEBAR_ITEMS} from "../common/SidebarLayout";
 import {yyyyMMdd} from "../../util/time";
@@ -23,7 +23,7 @@ export default class Trash extends React.Component {
 
     componentDidMount() {
         const {page, size} = this.state;
-        getPostDeletedList({page, size}).then(res => {
+        getPostDeletedList(page, size).then(res => {
             if (res.data.success) {
                 const data = res.data.data;
                 this.setState({
@@ -35,9 +35,17 @@ export default class Trash extends React.Component {
     }
 
     restoreOnClick(e) {
-        const restorePostId = e.target.children[0].innerText;
+        const postId = e.target.children[0].innerText;
+        restorePost(postId).then(res => {
+            if (res.data.success) {
+                showSuccessAndRefresh();
+            }
+        })
+    }
 
-        restorePost(restorePostId).then(res => {
+    deleteOnClick(e) {
+        const postId = e.target.children[0].innerText;
+        deleteRestorePost(postId).then(res => {
             if (res.data.success) {
                 showSuccessAndRefresh();
             }
@@ -61,11 +69,10 @@ export default class Trash extends React.Component {
                                     {postList.map((item, index) => (
                                         <div className="row my-2" key={index}>
                                             <div className="mr-3">
-                                                <span data-feather="plus"/>{yyyyMMdd(item.ctime)}&ensp;/&ensp;
-                                                <span data-feather="check"/>{yyyyMMdd(item.mtime)}
+                                                Posted on {yyyyMMdd(item.ctime)}&ensp;/&ensp;
+                                                Modified on {yyyyMMdd(item.mtime)}
                                             </div>
-                                            <a className="post-title no-underline word-break"
-                                               href={`/post/${item.name}`}>{item.title}</a>
+                                            <label className="post-title no-underline word-break">{item.title}</label>
                                             <div className="ml-auto mr-0">
                                                 {item.favorite ?
                                                     <span data-feather="star" className="mr-1"/> :
@@ -74,7 +81,16 @@ export default class Trash extends React.Component {
                                                     <span data-feather="eye-off"/>}
                                                 <button className="btn btn-outline-danger btn-sm ml-2"
                                                         onClick={e => this.restoreOnClick(e)}>
-                                                    restore<span style={{
+                                                    Restore<span style={{
+                                                    // visibility: "hidden",
+                                                    // opacity: 0,
+                                                    // position: "absolute", left: "-1000px",
+                                                    display: "none",
+                                                }}>{item.id}</span>
+                                                </button>
+                                                <button className="btn btn-outline-danger btn-sm ml-2"
+                                                        onClick={e => this.deleteOnClick(e)}>
+                                                    Delete<span style={{
                                                     // visibility: "hidden",
                                                     // opacity: 0,
                                                     // position: "absolute", left: "-1000px",

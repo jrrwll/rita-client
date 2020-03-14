@@ -6,7 +6,7 @@ import TagEditPanel from "./TagEditPanel";
 import ContentEditPanel from "./ContentEditPanel";
 import {emitter, showError, storage} from "../../config";
 import NameEditPanel from "./NameEditPanel";
-import {checkPostFormOrSetState, createPost, FETCH_USER_EVENT} from "../../actions";
+import {checkPostFormOrSetState, createPost, FETCH_TAGS_EVENT} from "../../actions";
 import {pushForcibly} from "../../util/history";
 import ErrorPanel from "../common/ErrorPanel";
 import HeaderLayout from "../common/HeaderLayout";
@@ -17,15 +17,13 @@ export default class PostNew extends React.Component {
         super(props);
         let {title, style, name, published, summary, currentTags, content} = storage.getPostNewDraft();
         this.state = {title, style, name, published, summary, currentTags, content, tags: []};
-        this.fetchUserEventEmitter = emitter.addListener(FETCH_USER_EVENT, (user) => {
-            let {tags} = user;
-            tags = tags.map(tag => tag.name);
-            this.setState({tags})
+        this.fetchTagsEventEmitter = emitter.addListener(FETCH_TAGS_EVENT, (tags) => {
+            this.setState({tags: tags.map(it => it.name)});
         });
     }
 
     componentWillUnmount() {
-        emitter.removeListener(FETCH_USER_EVENT, this.fetchUserEventEmitter);
+        emitter.removeListener(FETCH_TAGS_EVENT, this.fetchTagsEventEmitter);
     }
 
     pageOnSubmit() {
@@ -36,7 +34,8 @@ export default class PostNew extends React.Component {
         createPost({title, style, name, published, summary, tags: currentTags, content}).then(res => {
             if (res.data.success) {
                 storage.removePostNewDraft();
-                pushForcibly(`/post/${name}`);
+                const id = res.data.data;
+                pushForcibly(`/post/${id}`);
             } else {
                 showError(res.data.message);
             }

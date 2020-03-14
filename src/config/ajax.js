@@ -8,11 +8,15 @@ const requestQueue = [];
 axios.defaults.timeout = 5000;
 axios.defaults.withCredentials = false;
 axios.defaults.headers['content-type'] = 'application/json;charset=UTF-8';
+// development  --  yarn start
+// test         --  yarn run test
+// production   --  yarn run build
 if (process.env.NODE_ENV === 'development') {
     axios.defaults.baseURL = `http://localhost:8080/api/v1`;
+} else if (process.env.REACT_APP_ENV === 'docker') {
+    axios.defaults.baseURL = `/api/v1`;
 } else {
     axios.defaults.baseURL = `http://stranges.org/api/v1`;
-
 }
 
 axios.interceptors.request.use(

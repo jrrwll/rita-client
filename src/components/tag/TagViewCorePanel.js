@@ -11,8 +11,8 @@ export default class TagViewCorePanel extends Component {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         favorite: PropTypes.bool.isRequired,
-        ctime: PropTypes.string.isRequired,
-        mtime: PropTypes.string.isRequired,
+        ctime: PropTypes.number.isRequired,
+        mtime: PropTypes.number.isRequired,
         count: PropTypes.number.isRequired,
         setHiddenTagEdit: PropTypes.func.isRequired,
     };
@@ -30,10 +30,12 @@ export default class TagViewCorePanel extends Component {
         })
     }
 
-    changeFavorite(e, id, favorite) {
-        updateTag({id, favorite: !favorite}).then(res => {
+    changeFavorite() {
+        let {id, name, favorite} = this.props;
+        favorite = !favorite;
+        updateTag(id, {name, favorite}).then(res => {
             if (res.data.success) {
-                storage.removeUser();
+                storage.removeTags();
                 refresh();
             } else {
                 showError(res.data.message);
@@ -45,7 +47,7 @@ export default class TagViewCorePanel extends Component {
     }
 
     render() {
-        const {id, name, favorite, ctime, mtime, count, setHiddenTagEdit} = this.props;
+        const {name, favorite, ctime, mtime, count, setHiddenTagEdit} = this.props;
         return (
             <div>
                 <div className="text-center h3" style={{
@@ -67,13 +69,13 @@ export default class TagViewCorePanel extends Component {
                             }} onMouseLeave={e => {
                                 e.target.className = "fa fa-star fa-lg mr-1"
                             }}
-                               onClick={e => this.changeFavorite(e, id, favorite)}/> :
+                               onClick={e => this.changeFavorite()}/> :
                             <i className="fa fa-star-o fa-lg mr-1" onMouseEnter={e => {
                                 e.target.className = "fa fa-star fa-lg mr-1"
                             }} onMouseLeave={e => {
                                 e.target.className = "fa fa-star-o fa-lg mr-1"
                             }}
-                               onClick={e => this.changeFavorite(e, id, favorite)}/>
+                               onClick={e => this.changeFavorite()}/>
                         }
                     </div>
                     <div className="ml-auto">

@@ -7,14 +7,15 @@ import {deletePost, getPost} from "../../actions";
 import HeaderLayout from "../common/HeaderLayout";
 import {pushForcibly} from "../../util/history";
 import UserProvider from "../provider/UserProvider";
-import {dateFormat} from "../../util/time";
+import {yyyyMMdd} from "../../util/time";
 
 export default class PostView extends React.Component {
     constructor(props) {
         super(props);
-        const name = this.props.match.params.name;
+        const id = this.props.match.params.id;
         this.state = {
-            name: name,
+            id,
+            name: "",
             style: getStyle(),
             title: "",
             published: true,
@@ -33,7 +34,7 @@ export default class PostView extends React.Component {
     }
 
     componentDidMount() {
-        getPost({name: this.state.name}).then(res => {
+        getPost(this.state.id).then(res => {
             if (res.data.success) {
                 let {
                     title, name, published, summary, content,
@@ -45,10 +46,10 @@ export default class PostView extends React.Component {
                     published,
                     summary,
                     content,
-                    tags,
+                    tags: tags ? tags : [],
                     style: getStyle(style),
-                    ctime: dateFormat(ctime, "yyyy-MM-dd"),
-                    mtime: dateFormat(mtime, "yyyy-MM-dd"),
+                    ctime: yyyyMMdd(ctime),
+                    mtime: yyyyMMdd(mtime),
                 });
             } else {
                 showError(res.data.message);
@@ -72,7 +73,7 @@ export default class PostView extends React.Component {
     }
 
     render() {
-        const {title, name, ctime, mtime, tags, summary, content, published, favorite, style} = this.state;
+        const {id, title, name, ctime, mtime, tags, summary, content, published, favorite, style} = this.state;
         return (
             <div className="row">
                 {this.state.style ?
@@ -96,14 +97,14 @@ export default class PostView extends React.Component {
                                         textShadow: "1px 1px 1px #000",
                                     }}>Detail
                                     </div>
-                                    <div className="d-flex">
+                                    <div className="row">
                                         <p className="text-muted" style={{
                                             wordBreak: "break-word",
                                             // textShadow: "1px 1px 1px #ccc",
                                             lineHeight: 1.5,
                                         }}>{name}</p>
                                         <button className="btn btn-outline-info btn-sm ml-auto mr-2">
-                                            <a href={`/post/${name}/modify`} className="no-underline">
+                                            <a href={`/post/${id}/modify`} className="no-underline">
                                                 modify
                                             </a>
                                         </button>
@@ -113,25 +114,19 @@ export default class PostView extends React.Component {
                                         </button>
                                     </div>
 
-                                    <div className="d-flex text-muted">
+                                    <div className="row text-muted">
                                         <label>Posted on&nbsp;</label>
                                         <label className="font-italic">{ctime}</label>
                                         <label>&ensp;/&ensp;Modified on&nbsp;</label>
                                         <label className="font-italic">{mtime}</label>
                                         <label>&ensp;/&ensp;{published ? "published" : "unpublished"}</label>
-                                        <label>&ensp;/&ensp;{favorite ? "favorite" : "no favorite"}</label>
+                                        <label>&ensp;/&ensp;{favorite ? "loved" : "unloved"}</label>
                                         <label>&ensp;/&ensp;{style ? style : "default"} highlight</label>
-                                    </div>
-                                </li>
-                                <li className="list-group-item">
-                                    <div className="h5 text-center font-weight-bolder font-italic" style={{
-                                        textShadow: "1px 1px 1px #000",
-                                    }}>Tags
                                     </div>
                                     <div className="row">
                                         {
-                                            tags.map((tag, index) =>
-                                                <TagPanel tag={tag} key={`${index}`}/>)
+                                            tags.map((item, index) =>
+                                                <TagPanel tag={item} key={`${index}`}/>)
                                         }
                                     </div>
                                 </li>

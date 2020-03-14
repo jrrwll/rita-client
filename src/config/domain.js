@@ -1,5 +1,9 @@
 import {dateFormat} from "../util/time";
 
+export function getOrigin() {
+    return window.location.protocol + "//" + window.location.host;
+}
+
 export function getPostLink(ctime, name) {
     ctime = dateFormat(ctime, "yyyy-MM-dd");
     const year = ctime.slice(0, 4);

@@ -30,7 +30,7 @@ export default class FavoritePostList extends React.Component {
 
     componentDidMount() {
         const {page, size} = this.state;
-        getPostFavoriteList({page, size}).then(res => {
+        getPostFavoriteList(page, size).then(res => {
             if (res.data.success) {
                 const data = res.data.data;
                 this.setState({
@@ -54,16 +54,13 @@ export default class FavoritePostList extends React.Component {
                 <div className="col-md-9 ml-sm-auto col-lg-10 px-4 mt-5">
                     <div className="card mt-3">
                         <div className="card-body">
-                            <ul className="list-group list-group-flush">
+                            <ul className="list-group list-group-flush mb-4">
                                 <li className="list-group-item">
-                                    <div className="col-10 offset-1">
-                                        <label className="h4">Total {this.state.total}</label>
-                                    </div>
+                                    <label className="h4">Total {this.state.total}</label>
                                 </li>
                                 {this.state.posts.map((post, index) => (
-                                    <li className="list-group-item">
+                                    <li className="list-group-item" key={`${index}`}>
                                         <FavoritePostPanel
-                                            key={`${index}`}
                                             id={post.id}
                                             name={post.name}
                                             title={post.title}

@@ -4,7 +4,7 @@ import {submitPasswordReset} from "../../actions";
 import $ from "jquery";
 import {pushForcibly} from "../../util/history";
 
-export default class PasswordResetPage extends Component {
+export default class PasswordReset extends Component {
 
     handleSubmit(child, event) {
         const usernameInput = $("#password-reset-page-username");

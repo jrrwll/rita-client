@@ -17,15 +17,13 @@ export function updateUser({gender, style, birthday, email, username, firstName,
 
 export function getUsernameValidity(username) {
     return ajax.get({
-        url: '/user/username/validity',
-        params: {username}
+        url: `/user/validity/username/${username}`,
     });
 }
 
 export function getEmailValidity(email) {
     return ajax.get({
-        url: '/user/email/validity',
-        params: {email}
+        url: `/user/validity/email/${email}`,
     });
 }
 

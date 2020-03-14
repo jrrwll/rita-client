@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import feather from "feather-icons";
 import {emitter} from "../../config";
-import {FETCH_USER_EVENT} from "../../actions";
+import {FETCH_TAGS_EVENT} from "../../actions";
 
 export default class SidebarLayout extends React.Component {
     static propTypes = {
@@ -14,14 +14,13 @@ export default class SidebarLayout extends React.Component {
         this.state = {
             favoriteTags: [],
         };
-        this.fetchUserEventEmitter = emitter.addListener(FETCH_USER_EVENT, (user) => {
-            const {favoriteTags} = user;
-            this.setState({favoriteTags});
+        this.fetchTagsEventEmitter = emitter.addListener(FETCH_TAGS_EVENT, (tags) => {
+            this.setState({favoriteTags: tags.filter(it => !!it.favorite)});
         });
     }
 
     componentWillUnmount() {
-        emitter.removeListener(FETCH_USER_EVENT, this.fetchUserEventEmitter);
+        emitter.removeListener(FETCH_TAGS_EVENT, this.fetchTagsEventEmitter);
     }
 
     componentDidMount() {
@@ -37,13 +36,12 @@ export default class SidebarLayout extends React.Component {
         // it only works when React updated this state in first time;
         if (prevState.favoriteTags.length === 0 && favoriteTags.length !== 0) {
             if (RegExp(`${window.location.host}/tag/(.+)`).test(window.location.href)) {
-                const tag = RegExp.$1;
-                favoriteTags = favoriteTags.map(it => it.name);
-                const index = favoriteTags.indexOf(tag);
+                const tid = RegExp.$1;
+                const index = favoriteTags.map(it => it.id + "").indexOf(tid);
                 if (index !== -1) {
                     const li = document.querySelector("nav div").children[2].children[index];
                     if (li) {
-                        li.querySelector("a").setAttribute("class", "nav-link active")
+                        li.querySelector("a").setAttribute("class", "nav-link active");
                         li.scrollIntoView();
                     }
                 }
@@ -99,7 +97,7 @@ export default class SidebarLayout extends React.Component {
                     <ul className="nav flex-column mb-2">
                         {favoriteTags.map((tag, i) => (
                             <li className="nav-item" key={i}>
-                                <a className="nav-link" href={`/tag/${tag.name}`}>
+                                <a className="nav-link" href={`/tag/${tag.id}`}>
                                     <span data-feather="bookmark"/>
                                     <span style={{
                                         wordBreak: "break-word",

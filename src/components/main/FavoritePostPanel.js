@@ -6,7 +6,7 @@ import {md2html} from "../../config";
 
 export default class FavoritePostPanel extends React.Component {
     static propTypes = {
-        id: PropTypes.string.isRequired,
+        id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
         ctime: PropTypes.number.isRequired,
@@ -21,7 +21,7 @@ export default class FavoritePostPanel extends React.Component {
         const mtime = yyyyMMdd(this.props.mtime);
         const link = `/post/${this.props.name}`;
         return (
-            <div className="col-10 offset-1" style={{
+            <div className="col-12" style={{
                 marginBottom: 10,
                 marginTop: 10,
             }}>
@@ -47,8 +47,8 @@ export default class FavoritePostPanel extends React.Component {
                     marginLeft: 5,
                     marginBottom: 10,
                 }}>
-                    <div className="mb-1 mt-2 "><span data-feather="plus"/>{ctime}&ensp;/&ensp;</div>
-                    <div className="mb-1 mt-2 "><span data-feather="check"/>{mtime}&ensp;/&ensp;</div>
+                    <div className="mb-1 mt-2 ">{ctime}&ensp;/&ensp;</div>
+                    <div className="mb-1 mt-2 ">{mtime}&ensp;/&ensp;</div>
                     {
                         this.props.tags.map((tag, index) =>
                             <TagPanel tag={tag} key={`${index}`}/>)

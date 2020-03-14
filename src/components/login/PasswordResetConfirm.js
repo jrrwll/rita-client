@@ -1,62 +1,93 @@
-import React, {Component} from "react";
+import React from "react";
 import $ from 'jquery';
 import {validatePassword, validateUsername} from "../../config/validation";
+import {submitPasswordResetConfirm} from "../../actions";
+import {pushForcibly} from "../../util/history";
 import {getSearchValue} from "../../util/url";
+import NotFound from "../main/NotFound";
+import {storage} from "../../config";
 
-export default class LoginPanel extends Component {
-    state = {
-        usernameError: "",
-        passwordError: "",
-        errorMessage: "",
-    };
+export default class PasswordResetConfirm extends React.Component {
+    constructor(props) {
+        super(props);
+        const accessToken = getSearchValue("accessToken", "");
+        this.state = {
+            usernameError: "",
+            passwordError: "",
+            error: "",
+            accessToken,
+        };
+    }
 
     componentDidMount() {
-        const usernameInput = $("#login-page-username");
-        const username = getSearchValue("username", "");
-        if (username) {
-            usernameInput.val(username);
-            $("#login-page-password").focus();
-        } else {
-            usernameInput.focus();
-        }
+        $("#password-reset-confirm-page-username").focus();
     }
 
     checkUsername() {
-        const input = $("#login-page-username");
+        const input = $("#password-reset-confirm-page-username");
         const usernameError = validateUsername(input.val());
         if (usernameError) {
             input.attr("class", "form-control form-control-lg is-invalid");
         } else {
             input.attr("class", "form-control form-control-lg is-valid");
         }
-        this.setState({usernameError: usernameError});
+        this.setState({usernameError});
         return !usernameError
     }
 
     checkPassword() {
-        const input = $("#login-page-password");
+        const input = $("#password-reset-confirm-page-password");
         const passwordError = validatePassword(input.val());
         if (passwordError) {
             input.attr("class", "form-control form-control-lg is-invalid");
         } else {
             input.attr("class", "form-control form-control-lg is-valid");
         }
-        this.setState({passwordError: passwordError});
+        this.setState({passwordError});
         return !passwordError
     }
 
     passwordOnKeyUp(e) {
         if (!this.checkPassword()) return;
         if (e.key === "Enter") {
-            $("#login-page-submit").click();
+            $("#password-reset-confirm-page-submit").click();
         }
     }
 
     formOnSubmit() {
-        this.props.parent.handleSubmit(this)
+        const usernameInput = $("#password-reset-confirm-page-username");
+        if (!this.checkUsername()) {
+            usernameInput.focus();
+            return;
+        }
+
+        const passwordInput = $("#password-reset-confirm-page-password");
+        if (!this.checkPassword()) {
+            passwordInput.focus();
+            return;
+        }
+
+        const {accessToken} = this.state;
+        const username = usernameInput.val().trim();
+        submitPasswordResetConfirm({username, newPassword: passwordInput.val(), accessToken}).then(res => {
+            if (res.data.success) {
+                storage.removeAll();
+                // if success to reset password, go to the login page
+                pushForcibly(`/login?username=${username}`);
+            } else {
+                // or show error message in login page
+                this.setState({
+                    error: res.data.message,
+                });
+            }
+        })
     }
 
     render() {
+        if (!this.state.accessToken) {
+            return <NotFound/>
+        }
+
         return (
             <div style={{
                 background: "#f6f6f6",
@@ -80,7 +111,7 @@ export default class LoginPanel extends Component {
                             <div className="row" style={{marginTop: 25}}>
                                 <div className="col-4 offset-4">
                                     <h3 style={{textAlign: "center"}}>
-                                        <strong>Login to Lovely Rita</strong>
+                                        <strong>Reset password</strong>
                                     </h3>
                                 </div>
                             </div>
@@ -104,24 +135,17 @@ export default class LoginPanel extends Component {
                                     </div>
                                     <div className="col-4 offset-4">
                                         <label>Username</label>
-                                        <div className="input-group">
-                                            <input type="text" className="form-control form-control-lg"
-                                                   id="login-page-username" required placeholder="Username"
-                                                   onBlur={e => this.checkUsername()}
-                                                   onKeyUp={e => this.checkUsername()}/>
-                                        </div>
+                                        <input type="text" className="form-control form-control-lg"
+                                               id="password-reset-confirm-page-username" required placeholder="Username"
+                                               onChange={e => this.checkUsername()}/>
                                         <div className="invalid-feedback">
                                             {this.state.usernameError}
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="form-row" style={{marginTop: 30}}>
                                     <div className="col-4 offset-4">
                                         <label>Password</label>
                                         <input type="text" className="form-control form-control-lg"
-                                               id="login-page-password" required placeholder="Password"
-                                               onBlur={e => this.checkPassword()}
+                                               id="password-reset-confirm-page-password" required placeholder="Password"
                                                onKeyUp={e => this.passwordOnKeyUp(e)}/>
                                         <div className="invalid-feedback">
                                             {this.state.passwordError}
@@ -132,10 +156,10 @@ export default class LoginPanel extends Component {
                                 <div className="form-row" style={{marginTop: 30}}>
                                     <div className="col-4 offset-4">
                                         <button className="btn btn-primary btn-block" type="button"
-                                                id="login-page-submit"
+                                                id="password-reset-confirm-page-submit"
                                                 style={{marginBottom: 10,}}
                                                 onClick={e => this.formOnSubmit(e)}
-                                        >Submit
+                                        >Reset
                                         </button>
                                     </div>
                                 </div>
@@ -143,7 +167,7 @@ export default class LoginPanel extends Component {
                                 <div className="form-row" style={{marginBottom: 64}}>
                                     <div className="col-4 offset-4">
                                         <p>
-                                            <a href="/password-reset" className="link-primary">Reset password?</a>
+                                            <a href="/login" className="link-primary">Login</a>
                                             &nbsp;Or click here to&nbsp;
                                             <a href="/register" className="link-info">Sign Up</a></p>
                                     </div>

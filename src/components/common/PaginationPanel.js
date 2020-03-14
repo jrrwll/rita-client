@@ -43,7 +43,7 @@ export default class PaginationPanel extends React.Component {
         const pattern = this.props.pattern;
         const page = this.props.page;
         const totalPage = this.totalPage();
-        if (page === totalPage) {
+        if (totalPage === 0 || page === totalPage) {
             const next = pattern.replace('%d', `${page}`);
             return (
                 <li className="page-item disabled">

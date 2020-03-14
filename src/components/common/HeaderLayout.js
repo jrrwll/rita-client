@@ -28,6 +28,9 @@ export default class HeaderLayout extends React.Component {
     }
 
     componentWillUnmount() {
+        console.log(this.fetchUserEventEmitter);
+        console.log(this.fetchAvatarEventEmitter);
+
         emitter.removeListener(FETCH_USER_EVENT, this.fetchUserEventEmitter);
         emitter.removeListener(FETCH_AVATAR_EVENT, this.fetchAvatarEventEmitter);
     }

@@ -1,4 +1,5 @@
-import {ajax, storage} from "../config";
+import {ajax, emitter, showError, storage} from "../config";
+import {FETCH_TAGS_EVENT} from "./constants";
 
 export function createPost({title, style, name, published, favorite, summary, tags, content}) {
     return ajax.post({
@@ -7,56 +8,44 @@ export function createPost({title, style, name, published, favorite, summary, ta
     });
 }
 
-export function deletePost({id, name}) {
+export function deletePost(id) {
     return ajax.del({
-        url: '/post',
-        data: {id, name}
+        url: `/post/${id}`,
     });
 }
 
-export function updatePost({id, title, style, name, published, favorite, summary, tags, content}) {
+export function updatePost(id, {title, style, name, published, favorite, summary, tags, content}) {
     return ajax.put({
-        url: `/post`,
-        data: {id, title, style, name, published, favorite, summary, tags, content}
+        url: `/post/${id}`,
+        data: {title, style, name, published, favorite, summary, tags, content}
     });
 }
 
-export function getPost({id, name}) {
+export function getPost(id) {
     return ajax.get({
-        url: '/post',
-        params: {id, name}
+        url: `/post/${id}`,
     });
 }
 
 ///
 
-export function createTag({name, favorite}) {
-    return ajax.post({
-        url: '/tag',
+export function deleteTag(id) {
+    return ajax.del({
+        url: `/tag/${id}`,
+    });
+}
+
+export function updateTag(id, {name, favorite}) {
+    return ajax.put({
+        url: `/tag/${id}`,
         data: {name, favorite}
     });
 }
 
-export function deleteTag(id) {
-    return ajax.del({
-        url: '/tag',
-        data: {
-            id: id,
-        }
-    });
-}
-
-export function updateTag({id, name, favorite}) {
-    return ajax.put({
-        url: `/tag`,
-        data: {id, name, favorite}
-    });
-}
-
-export function getTag({name, page, size}) {
+export function getTag(id, page, size) {
     return ajax.get({
-        url: '/tag',
-        params: {name, page, size}
+        url: `/tag/${id}`,
+        params: {page, size}
     });
 }
 
@@ -64,53 +53,45 @@ export function getTag({name, page, size}) {
 
 export function getPostNameValidity(name) {
     return ajax.get({
-        url: '/post/name/validity',
-        params: {
-            name: name,
-        }
+        url: `/post/validity/name/${name}`,
     });
 }
 
 export function getTagNameValidity(name) {
     return ajax.get({
-        url: '/tag/name/validity',
-        params: {
-            name: name,
-        }
+        url: `/tag/validity/name/${name}`,
     });
 }
 
 export function removePostFromTag({tagId, postId}) {
     return ajax.del({
-        url: '/tag/remove/post',
-        data: {tagId, postId}
+        url: `/tag/${tagId}/remove/post/${postId}`,
     });
 }
 
 ///
 
-export function getPostList({page, size}) {
+export function getPostList(page, size) {
     return ajax.get({
         url: '/post/list',
         params: {page, size},
     });
 }
 
-export function getTagList({page, size}) {
+export function getTagList() {
     return ajax.get({
         url: '/tag/list',
-        params: {page, size},
     });
 }
 
-export function getPostFavoriteList({page, size}) {
+export function getPostFavoriteList(page, size) {
     return ajax.get({
         url: '/post/favorite/list',
         params: {page, size},
     });
 }
 
-export function getPostDeletedList({page, size}) {
+export function getPostDeletedList(page, size) {
     return ajax.get({
         url: '/post/deleted/list',
         params: {page, size},
@@ -119,12 +100,43 @@ export function getPostDeletedList({page, size}) {
 
 export function restorePost(id) {
     return ajax.post({
-        url: '/post/restore',
-        params: {id},
+        url: `/post/restore/${id}`,
     });
 }
 
+export function deleteRestorePost(id) {
+    return ajax.del({
+        url: `/post/restore/${id}`,
+    });
+}
+
+
 //// //// ////    //// //// ////    //// //// ////    //// //// ////    //// //// ////
+
+export function requireFetchTags() {
+    const tags = storage.getTags();
+    if (tags) {
+        emitter.emit(FETCH_TAGS_EVENT, tags);
+        return;
+    }
+    getTagList().then(res => {
+        if (res.data.success) {
+            const tags = res.data.data;
+            storage.setTags(tags);
+            emitter.emit(FETCH_TAGS_EVENT, tags);
+        } else {
+            showError(res.data.message);
+        }
+    }, err => {
+        if (ajax.isCancel(err)) {
+            console.error("Duplicated request for fetching tags, it's a unexpected error!");
+            return;
+        }
+        console.error("I failed to fetch tags, " +
+            " it could be a network or server-end issue, could be my mistake!");
+        console.error(err);
+    });
+}
 
 export function checkPostFormOrSetState(refer) {
     let {title, name, summary, content} = refer.state;
@@ -150,10 +162,10 @@ export function checkPostFormOrSetState(refer) {
 }
 
 export function isFavoriteTag(name) {
-    const user = storage.getUser();
-    if (!user) {
+    const tags = storage.getTags();
+    if (!tags) {
         return false;
     }
-    const favoriteTags = user.favoriteTags.map(it => it.name);
+    const favoriteTags = tags.map(it => it.name);
     return favoriteTags.indexOf(name) !== -1;
 }
