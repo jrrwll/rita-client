@@ -8,6 +8,7 @@ import HeaderLayout from "../common/HeaderLayout";
 import {pushForcibly} from "../../util/history";
 import UserProvider from "../provider/UserProvider";
 import {yyyyMMdd} from "../../util/time";
+import {FormattedMessage} from "react-intl";
 
 export default class PostView extends React.Component {
     constructor(props) {
@@ -35,7 +36,7 @@ export default class PostView extends React.Component {
 
     componentDidMount() {
         getPost(this.state.id).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 let {
                     title, name, published, summary, content,
                     tags, ctime, mtime, style
@@ -62,7 +63,7 @@ export default class PostView extends React.Component {
     deleteOnClick() {
         const {id} = this.state;
         deletePost(id).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 pushForcibly("/posts")
             } else {
                 console.error(res.data.message);
@@ -88,15 +89,13 @@ export default class PostView extends React.Component {
                         <div className="card-body">
                             <ul className="list-group list-group-flush">
                                 <li className="list-group-item">
-                                    <div className="text-center mt-5">
-                                        <p className="h2">{title}</p>
+                                    <div className="text-center mt-5 ">
+                                        <p className="h2 font-weight-bolder font-italic" style={{
+                                            textShadow: "1px 1px 1px #000",
+                                        }}>{title}</p>
                                     </div>
                                 </li>
                                 <li className="list-group-item">
-                                    <div className="h5 text-center font-weight-bolder font-italic" style={{
-                                        textShadow: "1px 1px 1px #000",
-                                    }}>Detail
-                                    </div>
                                     <div className="row">
                                         <p className="text-muted" style={{
                                             wordBreak: "break-word",
@@ -129,24 +128,9 @@ export default class PostView extends React.Component {
                                                 <TagPanel tag={item} key={`${index}`}/>)
                                         }
                                     </div>
-                                </li>
-                                <li className="list-group-item">
-                                    <div className="h5 text-center font-weight-bolder font-italic" style={{
-                                        textShadow: "1px 1px 1px #000",
-                                    }}>Summary
-                                    </div>
-                                    <div style={{
+                                    <div className="row" style={{
                                         marginTop: 30,
-                                    }} dangerouslySetInnerHTML={{__html: md2html(summary)}}>
-                                    </div>
-                                </li>
-                                <li className="list-group-item">
-                                    <div className="h5 text-center font-weight-bolder font-italic" style={{
-                                        textShadow: "1px 1px 1px #000",
-                                    }}>Post content
-                                    </div>
-                                    <div style={{
-                                        marginTop: 30,
+                                        wordBreak: "break-all"
                                     }} dangerouslySetInnerHTML={{__html: md2html(content)}}>
                                     </div>
                                 </li>

@@ -21,7 +21,7 @@ export default class PasswordReset extends Component {
 
         const username = usernameInput.val().trim();
         submitPasswordReset(username, passwordInput.val()).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 // if success to reset password, go to the login page
                 pushForcibly(`/login`);
             } else {

@@ -2,6 +2,14 @@ import {toast} from "react-toastify";
 import {pushForcibly, refresh} from "../util/history";
 import {storage} from ".";
 
+export const toastError = (msg, autoClose=1000) => {
+    toast.error(msg, {
+        position: "top-center",
+        closeOnClick: true,
+        autoClose,
+    });
+};
+
 export const showError = (message) => {
     if (!message) {
         message = "😭 Oops! A error just occurred, maybe your network promble";

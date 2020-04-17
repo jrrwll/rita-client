@@ -1,8 +1,9 @@
 import React from 'react';
-import {emitter, storage} from "../../config";
-import {FETCH_AVATAR_EVENT, FETCH_USER_EVENT} from "../../actions";
+import {emitter, showError, storage} from "../../config";
+import {createPost, FETCH_AVATAR_EVENT, FETCH_USER_EVENT} from "../../actions";
 import feather from "feather-icons";
 import {pushForcibly} from "../../util/history";
+import {FormattedMessage} from "react-intl";
 
 
 export default class HeaderLayout extends React.Component {
@@ -52,6 +53,46 @@ export default class HeaderLayout extends React.Component {
         storage.removeAvatar();
     }
 
+    onUploadFolder(e) {
+        // file.webkitRelativePath: chosen_folder/path/to/file
+        if (!e.target.files) return;
+
+        let files = e.target.files;
+        let len = files.length;
+        for (let i=0; i<len; i++){
+            let file = files[i];
+            let name = file.name;
+            if (name[0] === '.') continue;
+
+            let title = name.slice(0, name.lastIndexOf("."));
+            let ext = name.slice(name.lastIndexOf(".") + 1);
+            let tags = file.webkitRelativePath.split("/");
+            tags = tags.slice(0, tags.length  -1);
+            name = tags.join("_") + "_" + title;
+
+            let style = storage.getStyle();
+            if (!style) style = 'default';
+
+            const fileReader = new FileReader();
+            fileReader.onload = e => {
+                let content = e.target.result;
+                if (ext.toLowerCase() !== 'md'){
+                    content = "```" + ext + "\n" + content + "\n```";
+                }
+
+                createPost({title, style, name, published: true, favorite: false, tags, content})
+                    .then(res => {
+                        if (res.data.code !== 0) {
+                            showError(res.data.msg)
+                        }
+                    }, err => {
+                        console.error(err);
+                    });
+            };
+            // read as utf-8 string
+            fileReader.readAsText(file);
+        }
+    }
 
     render() {
         const {firstName, lastName, avatar, isNewPostPage} = this.state;
@@ -74,7 +115,7 @@ export default class HeaderLayout extends React.Component {
                     {isNewPostPage ?
                         <button className="btn btn-outline-light ml-auto"
                                 onClick={this.goBack}>
-                            Back
+                            <FormattedMessage id="Back"/>
                         </button>
                         :
                         <a className="btn btn-outline-light ml-auto" href="/posts/new">
@@ -82,11 +123,21 @@ export default class HeaderLayout extends React.Component {
                         </a>
                     }
 
+                    <button className="btn btn-outline-light ml-2"
+                            onClick={() => {
+                                let inputFolder = document.querySelector("#upload-folder");
+                                if (!inputFolder) return;
+                                inputFolder.click();
+                            }}>
+                        <FormattedMessage id="Upload"/>
+                    </button>
+                    <input type="file" id="upload-folder" style={{display: "none"}}
+                           webkitdirectory="" accept="*/*" onChange={this.onUploadFolder}/>
                     <ul className="navbar-nav px-3">
                         <li className="nav-item text-nowrap">
                             <a className="nav-link" href="/login"
                                onClick={e => this.signOut()}
-                            >Sign out</a>
+                            ><FormattedMessage id="Sign out"/></a>
                         </li>
                     </ul>
                 </nav>

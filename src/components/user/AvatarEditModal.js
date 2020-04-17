@@ -61,7 +61,7 @@ export default class AvatarEditModal extends React.Component {
             context2D.drawImage(img, 0, 0, canvas.width, canvas.height);
             const newDataURL = canvas.toDataURL();
             updateAvatar(newDataURL).then(res => {
-                if (res.data.success) {
+                if (res.data.code === 0) {
                     storage.removeAvatar();
                     refresh();
                 } else {

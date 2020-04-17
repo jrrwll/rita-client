@@ -2,6 +2,8 @@ import React from "react";
 import {validateEmail, validateImageCode, validatePassword, validateUsername} from "../../config/validation";
 import $ from 'jquery';
 import {inputIconLeft} from "../../config";
+import TermFooter from "./TermFooter";
+import {FormattedMessage} from "react-intl";
 
 export default class RegisterPanel extends React.Component {
     state = {
@@ -107,7 +109,7 @@ export default class RegisterPanel extends React.Component {
                             <div className="row" style={{marginTop: 25}}>
                                 <div className="col-4 offset-4">
                                     <h3 style={{textAlign: "center"}}>
-                                        <strong>Sign Up to Lovely Rita</strong>
+                                        <strong><FormattedMessage id="Sign Up to Lovely Rita"/></strong>
                                     </h3>
                                 </div>
                             </div>
@@ -130,67 +132,80 @@ export default class RegisterPanel extends React.Component {
                                         )}
                                     </div>
                                     <div className="col-4 offset-4">
-                                        <input type="text" placeholder="Username" className="form-control"
-                                               style={inputIconLeft("solid/user")}
-                                               id="register-page-username" required
-                                               onBlur={e => this.checkUsername()}
-                                               onKeyUp={e => this.checkUsername()}
-                                               aria-describedby="tooltip"
-                                        />
+                                        <FormattedMessage id="Username">
+                                            {msg => <input type="text" placeholder={msg} className="form-control"
+                                                           style={inputIconLeft("solid/user")}
+                                                           id="register-page-username" required
+                                                           onBlur={e => this.checkUsername()}
+                                                           onKeyUp={e => this.checkUsername()}
+                                                           aria-describedby="tooltip"
+                                            />}
+                                        </FormattedMessage>
                                         <div className="invalid-feedback">
-                                            {this.state.usernameError}
+                                            {this.state.usernameError && <FormattedMessage id={this.state.usernameError}/>}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="form-row" style={{marginTop: 25}}>
                                     <div className="col-4 offset-4">
-                                        <input type="text" className="form-control"
-                                               style={inputIconLeft("solid/lock")}
-                                               id="register-page-password"
-                                               required placeholder="Password"
-                                               onBlur={e => this.checkPassword()}
-                                               onKeyUp={e => this.checkPassword()}/>
+                                        <FormattedMessage id="Password">
+                                            {msg => <input type="text" className="form-control"
+                                                           style={inputIconLeft("solid/lock")}
+                                                           id="register-page-password"
+                                                           required placeholder={msg}
+                                                           onBlur={e => this.checkPassword()}
+                                                           onKeyUp={e => this.checkPassword()}/>}
+                                        </FormattedMessage>
                                         <div className="invalid-feedback">
-                                            {this.state.passwordError}
+                                            {this.state.passwordError && <FormattedMessage id={this.state.passwordError}/>}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="form-row" style={{marginTop: 25}}>
                                     <div className="col-4 offset-4">
-                                        <input type="text" className="form-control"
-                                               style={inputIconLeft("solid/envelope")}
-                                               id="register-page-email"
-                                               required placeholder="Email address"
-                                               onBlur={e => this.checkEmail()}
-                                               onKeyUp={e => this.checkEmail()}/>
+                                        <FormattedMessage id="Email address">
+                                            {msg => <input type="text" className="form-control"
+                                                           style={inputIconLeft("solid/envelope")}
+                                                           id="register-page-email"
+                                                           required placeholder={msg}
+                                                           onBlur={e => this.checkEmail()}
+                                                           onKeyUp={e => this.checkEmail()}/>}
+                                        </FormattedMessage>
+
                                         <div className="invalid-feedback">
-                                            {this.state.emailError}
+                                            {this.state.emailError && <FormattedMessage id={this.state.emailError}/>}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="form-row" style={{marginTop: 25}}>
                                     <div className="col-4 offset-4">
-                                        <input type="text" className="form-control"
-                                               style={inputIconLeft("solid/eye")}
-                                               id="register-page-image-code"
-                                               required placeholder="Image code"
-                                               onBlur={e => this.checkImageCode()}
-                                               onFocus={e => this.imageCodeOnFocus()}
-                                               onKeyUp={e => this.imageCodeOnKeyUp(e)}/>
+                                        <FormattedMessage id="Image code">
+                                            {msg => <input type="text" className="form-control"
+                                                           style={inputIconLeft("solid/eye")}
+                                                           id="register-page-image-code"
+                                                           required placeholder={msg}
+                                                           onBlur={e => this.checkImageCode()}
+                                                           onFocus={e => this.imageCodeOnFocus()}
+                                                           onKeyUp={e => this.imageCodeOnKeyUp(e)}/>}
+                                        </FormattedMessage>
+
                                         <div className="invalid-feedback">
-                                            {this.state.imageCodeError}
+                                            {this.state.imageCodeError && <FormattedMessage id={this.state.imageCodeError}/>}
                                         </div>
                                         <div className="form-row" style={{marginTop: 15, marginBottom: 10}}>
                                             <button className="btn btn-primary btn-block" type="button"
                                                     id="register-page-submit"
                                                     onClick={e => this.formOnSubmit(e)}>
-                                                Register
+                                                <FormattedMessage id="Register"/>
                                             </button>
                                             <div style={{marginTop: 10}}>
-                                                <p>Existing a account? <a href="/login">Click here to login</a></p>
+                                                <p>
+                                                    <FormattedMessage id="Existing a account? "/>
+                                                    <a href="/login"><FormattedMessage id="Click here to login"/></a>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -211,25 +226,7 @@ export default class RegisterPanel extends React.Component {
                     </div>
 
 
-                    <div className="row">
-                        <div className="col-4 offset-4" style={{
-                            display: "flex",
-                            marginBottom: 30
-                        }}>
-                            <a href="/site/terms" style={{marginRight: "auto"}}>
-                                <small style={{color: "#71767d"}}>Terms</small>
-                            </a>
-                            <a href="/site/privacy" style={{marginRight: "auto"}}>
-                                <small style={{color: "#71767d"}}>Privacy</small>
-                            </a>
-                            <a href="/site/security" style={{marginRight: "auto"}}>
-                                <small style={{color: "#71767d"}}>Security</small>
-                            </a>
-                            <a href="/site/contact" style={{marginRight: 0}}>
-                                <small>Contact us</small>
-                            </a>
-                        </div>
-                    </div>
+                    <TermFooter/>
 
                 </div>
             </div>

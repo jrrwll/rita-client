@@ -5,6 +5,7 @@ import SidebarLayout, {SIDEBAR_ITEMS} from "../common/SidebarLayout";
 import {emitter, showError, showUnexpectedError, storage} from "../../config";
 import UserProvider from "../provider/UserProvider";
 import {refresh} from "../../util/history";
+import {FormattedMessage} from "react-intl";
 
 export default class TagList extends React.Component {
     constructor(props) {
@@ -36,7 +37,7 @@ export default class TagList extends React.Component {
         }
 
         deleteTag(deleteTagId).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 refresh();
             } else {
                 showError("Failed to delete this tag " + deleteTagId);
@@ -48,7 +49,7 @@ export default class TagList extends React.Component {
         let {id, name, favorite} = tag;
         favorite = !favorite;
         updateTag(id, {name, favorite}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removeTags();
                 refresh();
             } else {
@@ -71,7 +72,7 @@ export default class TagList extends React.Component {
                         <div className="card-body">
                             <ul className="list-group list-group-flush mb-4">
                                 <li className="list-group-item">
-                                    <label className="h4">Total {total}</label>
+                                    <label className="h4"><FormattedMessage id="Total"/> {total}</label>
                                 </li>
                                 <li className="list-group-item">
                                     <div className=" row">
@@ -99,7 +100,7 @@ export default class TagList extends React.Component {
                                                                 data-toggle="modal"
                                                                 data-target="#tag-list-delete-tag-confirm-modal"
                                                                 onClick={e => this.deleteButtonOnClick(e)}>
-                                                            delete<span style={{
+                                                            <FormattedMessage id="Delete"/><span style={{
                                                             // visibility: "hidden",
                                                             // opacity: 0,
                                                             // position: "absolute", left: "-1000px",

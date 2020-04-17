@@ -32,7 +32,7 @@ export default class PostNew extends React.Component {
         if (!checkPostFormOrSetState(this)) return;
 
         createPost({title, style, name, published, summary, tags: currentTags, content}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removePostNewDraft();
                 const id = res.data.data;
                 pushForcibly(`/post/${id}`);

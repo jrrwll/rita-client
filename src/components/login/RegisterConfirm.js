@@ -45,7 +45,7 @@ export default class RegisterConfirm extends React.Component {
         const {accessToken} = this.state;
         const username = usernameInput.val().trim();
         submitRegisterConfirm({username, accessToken}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removeAll();
                 pushForcibly(`/login?username=${username}`);
             } else {

@@ -39,7 +39,7 @@ export default class PostModify extends React.Component {
 
     componentDidMount() {
         getPost(this.state.id).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 let {
                     title, name, published, summary, content,
                     tags, ctime, mtime, style
@@ -73,7 +73,7 @@ export default class PostModify extends React.Component {
         if (!checkPostFormOrSetState(this)) return;
 
         updatePost(id, {title, style, name, published, summary, tags: currentTags, content}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 pushForcibly(`/post/${id}`);
             } else {
                 this.setState({error: res.data.message});

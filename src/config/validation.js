@@ -1,5 +1,10 @@
 import React from "react";
 
+export const PATTERN_USERNAME = /^[a-zA-Z][a-zA-Z0-9_-]{3,31}$/;
+export const PATTERN_PASSWORD = /^[a-zA-Z0-9!@#$%^&*-_+=/\\|:;"',.?]{4,20}$/;
+export const PATTERN_EMAIL = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
+export const PATTERN_IMAGE_CODE = /^[A-Za-z0-9]{4,8}$/;
+
 export const usernameContent = (
     <div style={{
         color: "rgba(12, 12, 12, 0.5)",

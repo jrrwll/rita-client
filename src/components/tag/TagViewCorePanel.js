@@ -20,7 +20,7 @@ export default class TagViewCorePanel extends Component {
     deleteOnClick() {
         const {id} = this.props;
         deleteTag(id).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 pushForcibly("/tags")
             } else {
                 showError(res.data.message);
@@ -34,7 +34,7 @@ export default class TagViewCorePanel extends Component {
         let {id, name, favorite} = this.props;
         favorite = !favorite;
         updateTag(id, {name, favorite}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removeTags();
                 refresh();
             } else {

@@ -31,7 +31,7 @@ export default class FavoritePostList extends React.Component {
     componentDidMount() {
         const {page, size} = this.state;
         getPostFavoriteList(page, size).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 const data = res.data.data;
                 this.setState({
                     posts: data.items,

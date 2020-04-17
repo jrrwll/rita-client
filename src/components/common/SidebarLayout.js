@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import feather from "feather-icons";
 import {emitter} from "../../config";
 import {FETCH_TAGS_EVENT} from "../../actions";
+import {FormattedMessage} from "react-intl";
 
 export default class SidebarLayout extends React.Component {
     static propTypes = {
@@ -61,38 +62,38 @@ export default class SidebarLayout extends React.Component {
                         <li className="nav-item">
                             <a className="nav-link" aria-current="page" href="/overview">
                                 <span data-feather="home"/>
-                                Overview
+                                <FormattedMessage id="Overview"/>
                             </a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="/posts">
                                 <span data-feather="file"/>
-                                Posts
+                                <FormattedMessage id="Posts"/>
                             </a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="/tags">
                                 <span data-feather="at-sign"/>
-                                Tags
+                                <FormattedMessage id="Tags"/>
                             </a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="/trash">
                                 <span data-feather="trash-2"/>
-                                Trash
+                                <FormattedMessage id="Trash"/>
                             </a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="/favorites">
                                 <span data-feather="book"/>
-                                Favorites
+                                <FormattedMessage id="Favorites"/>
                             </a>
                         </li>
                     </ul>
 
                     <h6 className="d-flex px-3 mt-4 mb-1 text-muted" style={{
                         textTransform: "capitalize"
-                    }}>Favorite tags</h6>
+                    }}><FormattedMessage id="Favorite tags"/></h6>
 
                     <ul className="nav flex-column mb-2">
                         {favoriteTags.map((tag, i) => (

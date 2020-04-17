@@ -36,7 +36,7 @@ export default class TagView extends React.Component {
     componentDidMount() {
         const {id, page, size} = this.state;
         getTag(id, page, size).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 const {name, favorite, ctime, mtime, count, posts} = res.data.data;
                 this.setState({
                     name, favorite, ctime, mtime, count,
@@ -61,7 +61,7 @@ export default class TagView extends React.Component {
             showError("system internal error!!!")
         }
         removePostFromTag({tagId: id, postId}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 showSuccess();
                 setTimeout(() => refresh(), 3000);
             } else {

@@ -30,7 +30,7 @@ export default class Register extends React.Component {
         if (this.check(child) === undefined) return;
 
         obtainImageCode({email: $("#register-page-email").val(), width: 300, height: 100}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 child.setState({
                     hiddenImage: false,
                     imageSource: res.data.data,

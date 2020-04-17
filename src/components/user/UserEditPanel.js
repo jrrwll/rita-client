@@ -7,6 +7,7 @@ import {FETCH_USER_EVENT, getEmailValidity, getUsernameValidity, updateUser} fro
 import {refresh} from "../../util/history";
 import PropTypes from "prop-types";
 import {validateEmail, validateUsername} from "../../config/validation";
+import {FormattedMessage} from "react-intl";
 
 export class UserEditPanel extends Component {
     static propTypes = {
@@ -66,7 +67,7 @@ export class UserEditPanel extends Component {
             return;
         }
         updateUser({gender, style, birthday, email, username, firstName, lastName}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removeUser();
                 refresh();
             } else {
@@ -174,40 +175,40 @@ export class UserEditPanel extends Component {
                 <div className="card-body">
                     <div className="row">
                         <div className="col-md-4 my-1">
-                            <div className="h5 text-muted">Username</div>
+                            <div className="h5 text-muted"><FormattedMessage id="Username"/></div>
                             <input className="form-control" required
                                    id="user-edit-username"
                                    onChange={e => this.checkUsername(e.target)}
                                    onBlur={e => this.usernameOnBlur(e)}
                                    defaultValue={username}/>
                             <div className="invalid-feedback">
-                                {usernameError}
+                                {usernameError && <FormattedMessage id={usernameError}/>}
                             </div>
                             <div className="valid-feedback">
-                                {usernameCheck}
+                                {usernameCheck && <FormattedMessage id={usernameCheck}/>}
                             </div>
                         </div>
                         <div className="col-md-4 my-1">
-                            <div className="h5 text-muted">Email</div>
+                            <div className="h5 text-muted"><FormattedMessage id="Email"/></div>
                             <input className="form-control" required
                                    id="user-edit-email"
                                    onChange={e => this.checkEmail(e.target)}
                                    onBlur={e => this.emailOnBlur(e)}
                                    defaultValue={email}/>
                             <div className="invalid-feedback">
-                                {emailError}
+                                {emailError && <FormattedMessage id={emailError}/>}
                             </div>
                             <div className="valid-feedback">
-                                {emailCheck}
+                                {emailCheck && <FormattedMessage id={emailCheck}/>}
                             </div>
                         </div>
                         <div className="col-md-4 my-1">
-                            <div className="h5 text-muted">Style</div>
+                            <div className="h5 text-muted"><FormattedMessage id="Style"/></div>
                             <button className="btn btn-outline-success"
                                     data-toggle="modal"
                                     id="user-edit-style-choose-button"
                                     data-target="#user-edit-style-choose-modal"
-                            >Choose
+                            ><FormattedMessage id="Choose"/>
                             </button>
                         </div>
 
@@ -215,28 +216,28 @@ export class UserEditPanel extends Component {
                         <div className="col-md-6 my-1">
                             <form className="was-validated row" noValidate>
                                 <div className="col-md-6">
-                                    <label className="h5 text-muted">First name</label>
+                                    <label className="h5 text-muted"><FormattedMessage id="First name"/></label>
                                     <input className="form-control flex-fill" required
                                            id="user-edit-firstName"
                                            defaultValue={firstName}/>
                                     <div className="invalid-feedback">
-                                        This field is required!
+                                        <FormattedMessage id="This field is required!"/>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
-                                    <label className="h5 text-muted">Last name</label>
+                                    <label className="h5 text-muted"><FormattedMessage id="Last name"/></label>
                                     <input className="form-control flex-fill" required
                                            id="user-edit-lastName"
                                            defaultValue={lastName}/>
                                     <div className="invalid-feedback">
-                                        This field is required!
+                                        <FormattedMessage id="This field is required!"/>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <div className="col-md-6 my-1 row">
                             <div className="col-md-6">
-                                <label className="h5 text-muted">Birthday</label>
+                                <label className="h5 text-muted"><FormattedMessage id="Birthday"/></label>
                                 <Datetime dateFormat="YYYY-MM-DD" timeFormat={false}
                                           value={editedBirthday}
                                           onChange={moment => {
@@ -254,7 +255,7 @@ export class UserEditPanel extends Component {
                                 />
                             </div>
                             <div className="col-md-6">
-                                <label className="h5 text-muted">Gender</label>
+                                <label className="h5 text-muted"><FormattedMessage id="Gender"/></label>
                                 <select className="form-control form-select" id="user-edit-gender">
                                     <option value="female" defaultChecked={gender === 'female'}>Female</option>
                                     <option value="male" defaultChecked={gender === 'male'}>Male</option>
@@ -265,7 +266,7 @@ export class UserEditPanel extends Component {
                     </div>
                     <div className="mt-3">
                         <button type="button" className="btn btn-warning" data-dismiss="modal"
-                                onClick={e => this.confirmOnClick(e)}>Confirm
+                                onClick={e => this.confirmOnClick(e)}><FormattedMessage id="Confirm"/>
                         </button>
                     </div>
                 </div>

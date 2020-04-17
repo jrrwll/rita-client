@@ -7,6 +7,7 @@ import PaginationPanel from "../common/PaginationPanel";
 import {getSearchValue} from "../../util/url";
 import {showSuccessAndRefresh} from "../../config";
 import UserProvider from "../provider/UserProvider";
+import {FormattedMessage} from "react-intl";
 
 export default class Trash extends React.Component {
     constructor(props) {
@@ -24,7 +25,7 @@ export default class Trash extends React.Component {
     componentDidMount() {
         const {page, size} = this.state;
         getPostDeletedList(page, size).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 const data = res.data.data;
                 this.setState({
                     postList: data.items,
@@ -37,7 +38,7 @@ export default class Trash extends React.Component {
     restoreOnClick(e) {
         const postId = e.target.children[0].innerText;
         restorePost(postId).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 showSuccessAndRefresh();
             }
         })
@@ -46,7 +47,7 @@ export default class Trash extends React.Component {
     deleteOnClick(e) {
         const postId = e.target.children[0].innerText;
         deleteRestorePost(postId).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 showSuccessAndRefresh();
             }
         })
@@ -63,7 +64,7 @@ export default class Trash extends React.Component {
                         <div className="card-body">
                             <ul className="list-group list-group-flush mb-4">
                                 <li className="list-group-item">
-                                    <label className="h4">Total {total}</label>
+                                    <label className="h4"><FormattedMessage id="Total"/> {total}</label>
                                 </li>
                                 <li className="list-group-item">
                                     {postList.map((item, index) => (
@@ -81,7 +82,7 @@ export default class Trash extends React.Component {
                                                     <span data-feather="eye-off"/>}
                                                 <button className="btn btn-outline-danger btn-sm ml-2"
                                                         onClick={e => this.restoreOnClick(e)}>
-                                                    Restore<span style={{
+                                                    <FormattedMessage id="Restore"/><span style={{
                                                     // visibility: "hidden",
                                                     // opacity: 0,
                                                     // position: "absolute", left: "-1000px",
@@ -90,7 +91,7 @@ export default class Trash extends React.Component {
                                                 </button>
                                                 <button className="btn btn-outline-danger btn-sm ml-2"
                                                         onClick={e => this.deleteOnClick(e)}>
-                                                    Delete<span style={{
+                                                    <FormattedMessage id="Delete"/><span style={{
                                                     // visibility: "hidden",
                                                     // opacity: 0,
                                                     // position: "absolute", left: "-1000px",

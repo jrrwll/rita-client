@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import {emitter} from "../../config";
 import {FETCH_AVATAR_EVENT, FETCH_USER_EVENT} from "../../actions";
 import AvatarEditModal from "./AvatarEditModal";
+import {FormattedMessage} from "react-intl";
 
 export class UserPanel extends Component {
     static contextTypes = {
@@ -13,18 +14,12 @@ export class UserPanel extends Component {
         super(props, context);
         this.state = {
             firstName: "", lastName: "", avatar: "", email: "", username: "", gender: "",
-            birthday: "", style: "", postCount: 0, favoritePostCount: 0,
+            birthday: "", style: "", postCount: 0, favoritePostCount: 0, edit: true,
         };
         this.userEditClickEventEmitter = emitter.addListener("userEditClick", () => {
-            const btn = document.querySelector("#user-edit-button");
-            const text = btn.innerText;
-            if (text === 'Edit') {
-                btn.innerText = "Cancel";
-                this.context.setHiddenUserEdit(false);
-            } else {
-                btn.innerText = "Edit";
-                this.context.setHiddenUserEdit(true);
-            }
+            const hiddenEdit = !this.state.edit;
+            this.setState({edit: hiddenEdit});
+            this.context.setHiddenUserEdit(hiddenEdit);
         });
 
         this.fetchUserEventEmitter = emitter.addListener(FETCH_USER_EVENT, (user) => {
@@ -55,7 +50,7 @@ export class UserPanel extends Component {
     render() {
         const {
             firstName, lastName, avatar, email, username, gender,
-            birthday, style, postCount, favoritePostCount
+            birthday, style, postCount, favoritePostCount, edit,
         } = this.state;
         const fullName = firstName + " " + lastName;
         return (
@@ -68,7 +63,7 @@ export class UserPanel extends Component {
                             <button className="btn-primary btn-block my-2"
                                     id="avatar-edit-button"
                                     data-toggle="modal"
-                                    data-target="#user-change-avatar-modal">Change
+                                    data-target="#user-change-avatar-modal"><FormattedMessage id="Change"/>
                             </button>
                         </div>
                         <div className="col-10">
@@ -79,35 +74,36 @@ export class UserPanel extends Component {
                             </div>
                             <div className="h5 text-muted row">
                                 <div className="col-6">
-                                    Username:&emsp;
+                                    <FormattedMessage id="Username"/>:&emsp;
                                     <label className="mr-5 text-underline">{username}</label>
                                 </div>
                                 <div className="col-6">
-                                    Email:&emsp;
+                                    <FormattedMessage id="Email"/>:&emsp;
                                     <label className="text-underline">{email}</label>
                                 </div>
                             </div>
                             <div className="h5 text-muted row">
                                 <div className="col-6">
-                                    Gender:&emsp;
+                                    <FormattedMessage id="Gender"/>:&emsp;
                                     <label className="mr-5 text-underline">{gender}</label>
                                 </div>
                                 <div className="col-6">
-                                    Birthday:&emsp;
+                                    <FormattedMessage id="Birthday"/>:&emsp;
                                     <label className="text-underline">{birthday}</label>
                                 </div>
                             </div>
                             <div className="h5 text-muted row">
                                 <div className="col-10">
                                     <label className="text-underline text-capitalize">{style}</label>
-                                    &nbsp;/&nbsp;Posts <label className="text-underline">{postCount}</label>
-                                    &nbsp;/&nbsp;Favorite posts <label
+                                    &nbsp;/&nbsp;<FormattedMessage id="Total"/> <label className="text-underline">{postCount}</label>
+                                    &nbsp;/&nbsp;<FormattedMessage id="Favorites"/> <label
                                     className="text-underline">{favoritePostCount}</label>
                                 </div>
                                 <div className="col-2">
                                     <button className="btn btn-outline-info"
                                             id="user-edit-button"
-                                            onClick={e => this.editOnClick(e)}>Edit
+                                            onClick={e => this.editOnClick(e)}>
+                                        {edit ? <FormattedMessage id="Edit"/> : <FormattedMessage id="Cancel"/>}
                                     </button>
                                 </div>
                             </div>

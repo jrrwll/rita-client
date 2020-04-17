@@ -1,10 +1,12 @@
 import React from 'react';
 import {submitLogin} from "../../actions";
-import LoginPanel from "./LoginPanel";
 
 import {storage} from '../../config';
 import {pushForcibly} from '../../util/history'
 import $ from 'jquery';
+import LoginForm from "./LoginForm";
+import {FormattedMessage} from "react-intl";
+import TermFooter from "./TermFooter";
 
 export default class Login extends React.Component {
     componentDidMount() {
@@ -18,36 +20,41 @@ export default class Login extends React.Component {
         }
     }
 
-    handleSubmit(child, event) {
-        const usernameInput = $("#login-page-username");
-        if (!child.checkUsername()) {
-            usernameInput.focus();
-            return;
-        }
-
-        const passwordInput = $("#login-page-password");
-        if (!child.checkPassword()) {
-            passwordInput.focus();
-            return;
-        }
-
-        const username = usernameInput.val().trim();
-        submitLogin({username, password: passwordInput.val()}).then(res => {
-            if (res.data.success) {
-                // if success to login, go to the main page
-                pushForcibly(`/overview`);
-            } else {
-                // or show error message in login page
-                child.setState({
-                    error: res.data.message,
-                });
-            }
-        })
-    }
-
     render() {
         return (
-            <LoginPanel parent={this}/>
+            <div style={{
+                background: "#f6f6f6",
+            }}>
+                <div className="container-fluid" style={{
+                    height: 64,
+                    marginLeft: 0,
+                    marginRight: 0,
+                    background: "#21232a",
+                }}>
+
+                </div>
+
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-8 offset-2" style={{
+                            background: "#fff",
+                            marginTop: 64,
+                            marginBottom: 64,
+                        }}>
+                            <div className="row" style={{marginTop: 25}}>
+                                <div className="col-4 offset-4">
+                                    <h3 style={{textAlign: "center"}}>
+                                        <strong><FormattedMessage id="Login to Lovely Rita"/></strong>
+                                    </h3>
+                                </div>
+                            </div>
+                            <LoginForm/>
+                        </div>
+                    </div>
+                </div>
+
+                <TermFooter/>
+            </div>
         );
     }
 }

@@ -33,7 +33,7 @@ export default class TagViewEditPanel extends Component {
         }
 
         updateTag(id, {name, favorite}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removeTags();
                 refresh();
             } else {

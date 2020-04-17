@@ -70,7 +70,7 @@ export default class PasswordResetConfirm extends React.Component {
         const {accessToken} = this.state;
         const username = usernameInput.val().trim();
         submitPasswordResetConfirm({username, newPassword: passwordInput.val(), accessToken}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 storage.removeAll();
                 // if success to reset password, go to the login page
                 pushForcibly(`/login?username=${username}`);

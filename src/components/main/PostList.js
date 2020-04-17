@@ -7,6 +7,7 @@ import {getSearchValue} from "../../util/url";
 import {showError, showUnexpectedError} from "../../config";
 import UserProvider from "../provider/UserProvider";
 import {refresh} from "../../util/history";
+import {FormattedMessage} from "react-intl";
 
 export default class PostList extends React.Component {
     constructor(props) {
@@ -24,7 +25,7 @@ export default class PostList extends React.Component {
     componentDidMount() {
         const {page, size} = this.state;
         getPostList(page, size).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 const data = res.data.data;
                 this.setState({
                     postList: data.items,
@@ -48,7 +49,7 @@ export default class PostList extends React.Component {
         }
 
         deletePost(deletePostId).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 refresh();
             }
         })
@@ -73,7 +74,7 @@ export default class PostList extends React.Component {
         let {id, title, style, name, published, favorite, summary, content} = post;
         published = !published;
         updatePost(id, {title, style, name, published, favorite, summary, content}).then(res => {
-            if (res.data.success) {
+            if (res.data.code === 0) {
                 refresh();
             } else {
                 showError(res.data.message);
@@ -95,7 +96,7 @@ export default class PostList extends React.Component {
                         <div className="card-body">
                             <ul className="list-group list-group-flush mb-4">
                                 <li className="list-group-item">
-                                    <label className="h4">Total {total}</label>
+                                    <label className="h4"><FormattedMessage id="Total"/> {total}</label>
                                 </li>
                                 <li className="list-group-item">
                                     {postList.map((item, index) => (
@@ -135,13 +136,13 @@ export default class PostList extends React.Component {
                                                 }
                                                 <a className="btn btn-outline-info btn-sm ml-2"
                                                    href={`/post/${item.id}/modify`}>
-                                                    modify
+                                                    <FormattedMessage id="Modify"/>
                                                 </a>
                                                 <button className="btn btn-outline-danger btn-sm ml-1"
                                                         data-toggle="modal"
                                                         data-target="#post-list-delete-post-confirm-modal"
                                                         onClick={e => this.deletePostButtonOnClick(e)}>
-                                                    delete<span style={{
+                                                    <FormattedMessage id="Delete"/><span style={{
                                                     // visibility: "hidden",
                                                     // opacity: 0,
                                                     // position: "absolute", left: "-1000px",

@@ -14,24 +14,17 @@ export function submitRegisterConfirm({username, accessToken}) {
     });
 }
 
-export function submitLogin({username, password}) {
+export function submitLogin({username, password, imageCode, proof, timestamp, nonce}) {
     return ajax.post({
         url: '/auth/login',
-        data: {
-            username: username,
-            password: password,
-        },
+        data: {username, password, imageCode, proof, timestamp, nonce},
     });
 }
 
-export function obtainImageCode({email, width, height}) {
+export function obtainImageCode({proof, width, height}) {
     return ajax.post({
         url: '/auth/code/image',
-        data: {
-            email: email,
-            width: width,
-            height: height,
-        },
+        data: {proof, width, height},
     });
 }
 

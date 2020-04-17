@@ -50,12 +50,13 @@ export function requireFetchUser() {
         return;
     }
     fetchUser().then(res => {
-        if (res.data.success) {
+        if (res.data.code === 0) {
             const user = res.data.data;
             storage.setUser(user);
             emitter.emit(FETCH_USER_EVENT, user);
         } else {
-            showErrorAndGoToLogin(res.data.message);
+            console.warn(res.data)
+            //showErrorAndGoToLogin(res.data.message);
         }
     }, err => {
         if (ajax.isCancel(err)) {
@@ -75,7 +76,7 @@ export function requireFetchAvatar() {
         return;
     }
     fetchAvatar().then(res => {
-        if (res.data.success) {
+        if (res.data.code === 0) {
             const avatar = res.data.data;
             storage.setAvatar(avatar);
             emitter.emit(FETCH_AVATAR_EVENT, avatar);

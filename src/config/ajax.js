@@ -11,12 +11,11 @@ axios.defaults.headers['content-type'] = 'application/json;charset=UTF-8';
 // development  --  yarn start
 // test         --  yarn run test
 // production   --  yarn run build
+const API_VERSION = '/api/v1';
 if (process.env.NODE_ENV === 'development') {
-    axios.defaults.baseURL = `http://localhost:8080/api/v1`;
-} else if (process.env.REACT_APP_ENV === 'docker') {
-    axios.defaults.baseURL = `/api/v1`;
-} else {
-    axios.defaults.baseURL = `http://stranges.org/api/v1`;
+    axios.defaults.baseURL = `http://localhost:8080`;
+} else if (process.env.REACT_APP_ENV === 'production') {
+    axios.defaults.baseURL = `http://stranges.org`;
 }
 
 axios.interceptors.request.use(
@@ -52,7 +51,7 @@ axios.interceptors.response.use(
         requestQueue.splice(requestQueue.findIndex(item => item === request), 1)
 
         // server endpoint require client endpoint to update its token
-        const token = res.headers['x-set-authorization'];
+        const token = res.headers['authorization'];
 
         if (token) {
             storage.setToken(token);
@@ -67,6 +66,9 @@ axios.interceptors.response.use(
 
             // invalid token, go to login page
             if (err.response.status === 401) {
+                console.log(err);
+                return;
+
                 storage.removeToken();
                 // let pathname = history.location.pathname
                 pushForcibly('/login');
@@ -94,6 +96,8 @@ axios.interceptors.response.use(
 
 const ajax = {
     request(method, {url, data, params, headers = {}, config}) {
+        url = API_VERSION + url;
+
         return new Promise((resolve, reject) => {
             axios({
                 method: method.toLowerCase(),

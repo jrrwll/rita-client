@@ -120,7 +120,7 @@ export function requireFetchTags() {
         return;
     }
     getTagList().then(res => {
-        if (res.data.success) {
+        if (res.data.code === 0) {
             const tags = res.data.data;
             storage.setTags(tags);
             emitter.emit(FETCH_TAGS_EVENT, tags);
